@@ -70,4 +70,23 @@ describe("<Login />", () => {
       expect(mockNavigate).toHaveBeenCalledWith("/orders");
     });
   });
+
+  it("should show password", async () => {
+    handleLogin();
+
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const buttonTogglePassword = screen.getByRole("button", { name: "show" });
+
+    await act(() => {
+      fireEvent.click(buttonTogglePassword);
+    });
+
+    expect(passwordInput).toHaveAttribute("type", "text");
+
+    await act(() => {
+      fireEvent.click(buttonTogglePassword);
+    });
+
+    expect(passwordInput).toHaveAttribute("type", "password");
+  });
 });
