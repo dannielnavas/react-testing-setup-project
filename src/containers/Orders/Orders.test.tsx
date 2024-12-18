@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, Mock, vi } from "vitest";
 import { SessionProvider, useSession } from "../../context/AuthContext";
 import { getOrders } from "../../services/getOrders";
+import { getSummaryOrders } from "../../utils/sumamry";
 import { Orders } from "./Orders";
 
 vi.mock("../../services/getOrders", () => ({
@@ -18,7 +19,6 @@ vi.mock("../../context/AuthContext", async () => {
 });
 
 const mockGetOrders = getOrders as Mock;
-
 const mockOrders = [
   {
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -57,7 +57,7 @@ const mockOrders = [
 
 describe("<Orders />", () => {
   const handleRenderOrders = (userRole: string) => {
-    const mockUser = userRole ? { rol: userRole } : null;
+    const mockUser = userRole ? { role: userRole } : null;
     (useSession as Mock).mockReturnValue({ user: mockUser });
     render(
       <MemoryRouter>
@@ -73,6 +73,16 @@ describe("<Orders />", () => {
     await waitFor(() => {
       const orders = screen.getAllByRole("heading", { level: 3 });
       expect(orders).toHaveLength(1);
+    });
+  });
+
+  it("Debería mostrar sección para superadmin", async () => {
+    mockGetOrders.mockResolvedValue(mockOrders);
+    handleRenderOrders("superadmin");
+    await waitFor(() => {
+      const { totalOrders } = getSummaryOrders(mockOrders);
+      const totalOrdersElement = screen.getByTestId("totalOrders").textContent;
+      expect(totalOrdersElement).toBe(totalOrders.toString());
     });
   });
 });
