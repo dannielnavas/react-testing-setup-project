@@ -15,6 +15,12 @@ export default defineConfig({
         "**/App.tsx",
         "**/main.tsx",
       ],
+      thresholds: {
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
+      }, // Umbral de cobertura
     }, // Generar reporte de cobertura
   },
 });
